@@ -53,3 +53,7 @@ LABEL org.opencontainers.image.description Jupyter Notebook Server built with Do
 RUN [ "chmod", "+x", "./scripts/entrypoint.sh" ]
 
 CMD [ "./scripts/entrypoint.sh" ]
+
+# Monitor Jupyter notebook server availability
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD python3 /app/scripts/health_check.py --url http://127.0.0.1:8888 || exit 1
