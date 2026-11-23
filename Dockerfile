@@ -48,7 +48,9 @@ RUN apt-get update && apt-get -y install gcc mono-mcs && rm -rf /var/lib/apt/lis
 RUN pip install torch==1.10.1+cpu torchvision==0.11.2+cpu torchaudio==0.10.1 -f https://download.pytorch.org/whl/torch_stable.html
 
 # fastai
-RUN pip install fastai
+# Optional FastAI installation
+ARG INSTALL_FASTAI=false
+RUN if [ "$INSTALL_FASTAI" = "true" ]; then pip install fastai; fi
 
 # Project installs
 RUN pipenv install --skip-lock --system --dev
