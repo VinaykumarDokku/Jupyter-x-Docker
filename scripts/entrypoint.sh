@@ -1,3 +1,4 @@
 #!/bin/bash
+set -e
 
-/usr/local/bin/jupyter notebook --config=./configuration/jupyter.py
+exec jupyter lab --config=/app/configuration/jupyter.py
