@@ -1,5 +1,11 @@
 FROM python:3.9.0
 
+# Use archived Debian Buster repositories for legacy dependencies
+RUN printf 'deb http://archive.debian.org/debian buster main\n' > /etc/apt/sources.list && \
+    printf 'deb http://archive.debian.org/debian-security buster/updates main\n' >> /etc/apt/sources.list && \
+    printf 'Acquire::Check-Valid-Until "false";\n' > /etc/apt/apt.conf.d/99archive
+
+
 ENV APP_HOME /app
 WORKDIR ${APP_HOME}
 
