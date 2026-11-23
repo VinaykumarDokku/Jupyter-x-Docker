@@ -1,5 +1,6 @@
 services:
   jupyter:
+    platform: linux/amd64
     build:
       context: .
     container_name: jupyter-docker
