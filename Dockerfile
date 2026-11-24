@@ -67,3 +67,6 @@ CMD [ "./scripts/entrypoint.sh" ]
 # Monitor Jupyter notebook server availability
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD python3 /app/scripts/health_check.py --url http://127.0.0.1:8888 || exit 1
+
+# Ensure NumPy compatibility with PyTorch 1.10
+RUN python -m pip install numpy==1.26.4
