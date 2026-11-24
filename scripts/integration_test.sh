@@ -50,3 +50,10 @@ docker compose exec -T jupyter sh -c \
     'grep -qx integration-test /app/notebooks/.integration-test && rm /app/notebooks/.integration-test'
 
 echo "All integration tests passed."
+
+echo "Testing machine learning runtime..."
+
+docker compose exec -T jupyter python - \
+    < scripts/validate_ml_runtime.py || exit 1
+
+echo "ML runtime integration tests passed."
