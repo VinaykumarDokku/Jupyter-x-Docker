@@ -1,4 +1,4 @@
-FROM python:3.9.0
+FROM python:3.15.2
 
 # Use archived Debian Buster repositories for legacy dependencies
 RUN printf 'deb http://archive.debian.org/debian buster main\n' > /etc/apt/sources.list && \
