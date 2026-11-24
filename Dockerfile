@@ -60,6 +60,8 @@ LABEL org.opencontainers.image.description Jupyter Notebook Server built with Do
 
 RUN [ "chmod", "+x", "./scripts/entrypoint.sh" ]
 
+RUN python -m pip install setuptools==80.9.0
+
 CMD [ "./scripts/entrypoint.sh" ]
 
 # Monitor Jupyter notebook server availability
