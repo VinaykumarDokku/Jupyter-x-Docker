@@ -1,289 +1,445 @@
-# [Jupiter-x-Docker](https://jupyter-x-docker.herokuapp.com/)
+# Jupyter-x-Docker
 
-[![Jupyter x Docker on Heroku](Jupyter_x_Docker_to_Heroku.jpg)](https://jupyter-x-docker.herokuapp.com/)
+### Containerized JupyterLab Environment for AI, Machine Learning and Data Science
 
-Jupyter is a tool for running interactive notebooks; basically add Python with Markdown and you've got Jupyter.
+![Python](https://img.shields.io/badge/Python-3.9-blue?logo=python)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?logo=docker)
+![JupyterLab](https://img.shields.io/badge/JupyterLab-Enabled-F37626?logo=jupyter)
+![PyTorch](https://img.shields.io/badge/PyTorch-1.10.1-EE4C2C?logo=pytorch)
+![NumPy](https://img.shields.io/badge/NumPy-1.26.4-013243?logo=numpy)
+![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?logo=githubactions)
+![GHCR](https://img.shields.io/badge/GHCR-Public_Image-success)
 
-Deploy a Jupyter Notebook server on Heroku using Docker. 
+[![Publish Docker Image to GHCR](https://github.com/VinaykumarDokku/Jupyter-x-Docker/actions/workflows/ghcr.yml/badge.svg?branch=main)](https://github.com/VinaykumarDokku/Jupyter-x-Docker/actions/workflows/ghcr.yml)
+[![Docker Integration Tests](https://github.com/VinaykumarDokku/Jupyter-x-Docker/actions/workflows/integration-tests.yml/badge.svg?branch=main)](https://github.com/VinaykumarDokku/Jupyter-x-Docker/actions/workflows/integration-tests.yml)
+[![Jupyter Docker CI](https://github.com/VinaykumarDokku/Jupyter-x-Docker/actions/workflows/publish.yml/badge.svg?branch=main)](https://github.com/VinaykumarDokku/Jupyter-x-Docker/actions/workflows/publish.yml)
+[![Python Tests](https://github.com/VinaykumarDokku/Jupyter-x-Docker/actions/workflows/python-tests.yml/badge.svg?branch=main)](https://github.com/VinaykumarDokku/Jupyter-x-Docker/actions/workflows/python-tests.yml)
 
-## The big caveat
-Jupyter has the ability to create new notebooks and they will 100% save on your deployed docker-based Jupyter server... but they will **disappear** as soon as you deploy a new version. That's because containers, by their very nature, are ephemeral by default. 
+## Project Overview
 
-This caveat doesn't mean we shouldn't do this... it just means it is a HUGE consideration when using this guide over something like http://colab.research.google.com.
+Jupyter-x-Docker provides a containerized development environment
+for Python programming, machine learning, artificial intelligence,
+data analysis, and interactive experimentation.
 
-So encounter this issue, We will package all your Jupyter contents, download it, and unpackage it again when we deploy.
+The project combines Docker, JupyterLab, automated testing,
+persistent notebook storage, and GitHub Actions to simplify
+development and container distribution.
 
+Developers can build the environment locally or download a
+prebuilt Docker image from GitHub Container Registry.
 
-### Final Project Structure
+## Key Features
 
-```bash
-|   .dockerignore
-|   Dockerfile
-|   Jupyter_x_Docker_to_Heroku.jpg
-|   Pipfile
-|   Pipfile.lock
-|   README.md
-|   
-+---.github
-|   \---workflows
-|           publish.yml
-|           
-+---configuration
-|       jupyter.py
-|       
-+---root
-|       LoadUnload.ipynb
-|       notebook.tar.gz
-|       
-\---scripts
-        docker_build.ps1
-        docker_build.sh
-        docker_push.ps1
-        docker_push.sh
-        docker_run_dockerhub.ps1
-        docker_run_dockerhub.sh
-        docker_run_github_registry.ps1
-        docker_run_github_registry.sh
-        entrypoint.sh
-        github_registry_push.ps1
-        github_registry_push.sh
-        heroku_push.ps1
-        heroku_push.sh
+- Containerized JupyterLab development environment.
+- Docker Compose for simplified application management.
+- Persistent notebook storage.
+- Token-based Jupyter authentication.
+- CPU-based PyTorch support.
+- NumPy and PyTorch runtime compatibility.
+- Automated Python tests.
+- Docker integration and storage persistence tests.
+- Container health monitoring.
+- Automated Docker image publishing.
+- GitHub Actions CI/CD workflows.
+- Docker build caching.
+- Linux AMD64 compatibility on Apple Silicon through emulation.
+- Public container image distribution through GHCR.
+
+## System Architecture
+
+```mermaid
+flowchart TD
+    A[Developer] --> B[GitHub Repository]
+    B --> C[GitHub Actions]
+    C --> D[Python Tests]
+    C --> E[Docker Build]
+    C --> F[Integration Tests]
+    C --> G[Image Publishing]
+    G --> H[GitHub Container Registry]
+    H --> I[Docker Container]
+    I --> J[JupyterLab]
+    I --> K[PyTorch and NumPy]
+    I --> L[Persistent Notebook Storage]
+    I --> M[Container Health Check]
+    N[Web Browser] --> J
 ```
 
-## How it's done.
+## Technology Stack
 
-#### 1. Use `pipenv` and install `jupyter`
+| Technology | Purpose |
+|---|---|
+| Python 3.9 | Application runtime |
+| JupyterLab | Interactive development |
+| Docker | Application containerization |
+| Docker Compose | Container orchestration |
+| PyTorch 1.10.1+cpu | Deep learning |
+| NumPy 1.26.4 | Numerical computing |
+| GitHub Actions | CI/CD automation |
+| GitHub Container Registry | Docker image distribution |
+| Pipenv | Dependency management |
+| Shell Scripting | Automation and integration testing |
 
-```bash
-pip install pipenv
-cd jupyter-x-docker
-pipenv install jupyter --python 3.9
+## Project Structure
+
+```text
+Jupyter-x-Docker/
+├── .github/
+│   └── workflows/
+├── configuration/
+│   └── jupyter.py
+├── root/
+├── scripts/
+│   ├── entrypoint.sh
+│   ├── health_check.py
+│   └── integration_test.sh
+├── tests/
+├── .dockerignore
+├── .gitignore
+├── compose.yaml
+├── Dockerfile
+├── Pipfile
+├── Pipfile.lock
+└── README.md
 ```
 
-#### 2. Create Jupyter Configuration
+## Prerequisites
 
-**Generate Default Config**
+- Docker Desktop or Docker Engine
+- Docker Compose V2
+- Git
+- A modern web browser
+
+No separate local Python installation is required to run
+the prebuilt Docker image.
+
+## Quick Start
+
+### Option 1: Run the Published Docker Image
+
+Download the public Docker image:
 
 ```bash
-jupyter notebook --generate-config
+docker pull --platform linux/amd64 \
+  ghcr.io/vinaykumardokku/jupyter-x-docker:latest
 ```
 
-This command creates the default `jupyter_notebook_config.py` file on your local machine. Mine was stored on `~/.jupyter/jupyter_notebook_config.py`
-
-**Create `configuration/jupyter.py`**
+Start the container with persistent notebook storage:
 
 ```bash
-mkdir configuration
-echo "" > configuration/jupyter.py
+docker run -d \
+  --name jupyter-ml \
+  --platform linux/amd64 \
+  -p 127.0.0.1:8888:8888 \
+  -v jupyter-notebooks:/app/notebooks \
+  ghcr.io/vinaykumardokku/jupyter-x-docker:latest
 ```
 
-In `configuration/jupyter.py` add:
+Retrieve the Jupyter authentication token:
+
+```bash
+docker exec jupyter-ml jupyter server list
+```
+
+Open the following address in your browser:
+
+http://localhost:8888/lab
+
+Use the token displayed by the previous command.
+
+### Option 2: Build Locally with Docker Compose
+
+Clone the repository:
+
+```bash
+git clone https://github.com/VinaykumarDokku/Jupyter-x-Docker.git
+cd Jupyter-x-Docker
+```
+
+Build and start the application:
+
+```bash
+docker compose up --build -d
+```
+
+Check the container status:
+
+```bash
+docker compose ps
+```
+
+Retrieve the authentication token:
+
+```bash
+docker compose exec jupyter jupyter server list
+```
+
+Open JupyterLab using the host port configured in compose.yaml.
+
+## Machine Learning Runtime Verification
+
+Verify PyTorch and NumPy using the published image:
+
+```bash
+docker run --rm --platform linux/amd64 \
+  ghcr.io/vinaykumardokku/jupyter-x-docker:latest \
+  python -c 'import numpy; import torch; print("NumPy:", numpy.__version__); print("PyTorch:", torch.__version__); print(torch.rand(2,3).numpy())'
+```
+
+Verified runtime versions:
+
+```text
+NumPy: 1.26.4
+PyTorch: 1.10.1+cpu
+```
+
+The successful conversion of a PyTorch tensor into a NumPy
+array confirms interoperability between both libraries.
+
+## Example Machine Learning Experiment
+
+Create a Python notebook in JupyterLab and execute:
 
 ```python
-import os
-c = get_config()
+import numpy as np
+import torch
 
-# Kernel config
-c.IPKernelApp.pylab = 'inline'  # if you want plotting support always in your notebook
+x = torch.tensor([[1.0], [2.0], [3.0], [4.0]])
+y = 2 * x + 1
 
-# Notebook config
-c.NotebookApp.notebook_dir = 'root'
-c.NotebookApp.allow_origin = u'jupyter-x-docker.herokuapp.com' # put your public IP Address here
-c.NotebookApp.ip = '*'
-c.NotebookApp.allow_remote_access = True
-c.NotebookApp.open_browser = False
+model = torch.nn.Linear(1, 1)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+loss_function = torch.nn.MSELoss()
 
-# ipython -c "from notebook.auth import passwd; passwd()"
-c.NotebookApp.password = u"argon2:$argon2id$v=19$m=10240,t=10,p=8$98xA9epRaTToOra3j2dg/w$BCZmhp+/xaajsl2R8P57BigZvVT/KjkCqe9InvdyHwQ"
-c.NotebookApp.port = int(os.environ.get("PORT", 8888))
-c.NotebookApp.allow_root = True
-c.NotebookApp.allow_password_change = True
-c.ConfigurableHTTPProxy.command = ['configurable-http-proxy', '--redirect-port', '80']
+for epoch in range(2000):
+    prediction = model(x)
+    loss = loss_function(prediction, y)
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+with torch.no_grad():
+    result = model(torch.tensor([[5.0]]))
+
+print("Prediction:", result.item())
+print("NumPy output:", result.numpy())
 ```
 
-A few noteable setup items here:
+The example demonstrates model training, optimization,
+prediction, and PyTorch-to-NumPy conversion.
 
-- `c.NotebookApp.notebook_dir` I set as `root` which means you should create a directory as `root` for your default notebooks directory. In my case, jupyter will open right to this directory ignoring all others.
-- `c.NotebookApp.password` - this has to be a hashed password. To create a new one, just run `ipython -c "from notebook.auth import passwd; passwd()"` on your command line.
-- `c.NotebookApp.port` - Heroku sets this value in our environment variables thus `int(os.environ.get("PORT", 8888))` as our default.
+## Persistent Notebook Storage
 
-
-Test your new configuration locally with: `jupyter notebook --config=./configuration/jupyter.py`
-
-
-#### 3.Create a notebook under -> `root/LoadUnload.ipynb`
-
-This will be how you can handle the ephemeral nature of Docker containers with Jupyter notebooks. Just create a new notebook called `LoadUnload.ipynb`, and add the following:
-
-```python
-mode = "unload"
-
-if mode == 'unload':
-    # Zip all files in the current directory
-    !tar chvfz notebook.tar.gz *
-elif mode == 'load:
-    # Unzip all files in the current directory
-    !!tar -xv -f notebook.tar.gz
+```mermaid
+flowchart LR
+    A[Web Browser] --> B[JupyterLab]
+    B --> C[Docker Container]
+    C --> D[Notebook Directory]
+    D --> E[Persistent Storage]
+    E --> F[Saved Notebooks]
 ```
 
+Persistent storage allows notebook files to survive container
+restarts and recreation when the same storage mount is reused.
 
-#### 4. Add your `Dockerfile`
-
-This is the absolute minimum setup here. You might want to add additional items as needed. Certain packages, especially the ones for data science, require additional installs for our docker-based linux server.
-
-```dockerfile
-FROM python:3.9.0
-
-ENV APP_HOME /app
-WORKDIR ${APP_HOME}
-
-COPY . ./
-
-RUN pip install pip pipenv --upgrade
-RUN pipenv install --skip-lock --system --dev
-
-LABEL org.opencontainers.image.source https://github.com/Sreeja2612/Jupyter-x-Docker.git
-LABEL org.opencontainers.image.description Jupyter Notebook Server built with Docker & deployed on Heroku.
-
-RUN [ "chmod", "+x", "./scripts/entrypoint.sh" ]
-
-CMD ["./scripts/entrypoint.sh"]
-```
-
-This is the one I used [Jupyter-x-Docker](https://jupyter-x-docker.herokuapp.com/)
-
-Since, You might need additional packages (like `numpy` or `pandas` or `opencv`) in your project.
-
-```dockerfile
-FROM python:3.9.0
-
-ENV APP_HOME /app
-WORKDIR ${APP_HOME}
-
-COPY . ./
-
-# Install Ubuntu dependencies
-# libopencv-dev = opencv dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        tzdata \
-        libopencv-dev \ 
-        build-essential \
-        libssl-dev \
-        libpq-dev \
-        libcurl4-gnutls-dev \
-        libexpat1-dev \
-        gettext \
-        unzip \
-        supervisor \
-        python3-setuptools \
-        python3-pip \
-        python3-dev \
-        python3-venv \
-        python3-urllib3 \
-        git \
-        && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-
-RUN pip install pip pipenv --upgrade
-
-# sklearn opencv, numpy, and pandas
-RUN pip install scikit-learn opencv-contrib-python numpy pandas
-
-# tensorflow (including Keras)
-RUN pip install tensorflow keras
-
-# pytorch (cpu)
-RUN apt-get update && apt-get -y install gcc mono-mcs && rm -rf /var/lib/apt/lists/*
-RUN pip install torch==1.10.1+cpu torchvision==0.11.2+cpu torchaudio==0.10.1 -f https://download.pytorch.org/whl/torch_stable.html
-
-# fastai
-RUN pip install fastai
-
-# Project installs
-RUN pipenv install --skip-lock --system --dev
-
-LABEL org.opencontainers.image.source https://github.com/Sreeja2612/Jupyter-x-Docker.git
-LABEL org.opencontainers.image.description Jupyter Notebook Server built with Docker & deployed on Heroku.
-
-RUN [ "chmod", "+x", "./scripts/entrypoint.sh" ]
-
-CMD [ "./scripts/entrypoint.sh" ]
-```
-
-> The most noteable part of this all is that 
-    (1) We are using `pipenv` locally and in docker and 
-    (2) We have both installed `pipenv` and run `pipenv install --system` to install all pipenv dependancies to the entire docker container (instead of in a virtual environment within the container as well).
-
-
-#### 5. Create `scripts/entrypoint.sh`
-
-I perfer using a `entrypoint.sh` script for the `CMD` in Dockerfiles. 
+Stop the Compose application:
 
 ```bash
-#!/bin/bash
-
-/usr/local/bin/jupyter notebook --config=./configuration/jupyter.py
+docker compose down
 ```
 
-
-#### 6. Build & Run Docker Locally
+Restart the application:
 
 ```bash
-docker build -t Sreeja2612/Jupyter-x-Docker:latest
-docker run --env PORT=8888 -it -p 8888:8888 Sreeja2612/Jupyter-x-Docker
+docker compose up -d
 ```
 
-#### 7. Heroku Setup
+Avoid removing Docker volumes unless you intentionally want
+to delete the data stored in them.
 
-##### 1. Create heroku app
+## Automated Testing
+
+### Python Tests
+
+The Python test suite validates project functionality
+and supporting scripts.
+
+Python tests are executed through GitHub Actions.
+
+### Container Health Check
+
+Check the running container:
 
 ```bash
-heroku create jupyter-x-docker
+docker inspect --format='{{.State.Health.Status}}' jupyter-ml
 ```
-- Change `jupyter-x-docker` to your app name
 
-##### 2. Login to Heroku Container Registry
+Expected result after initialization:
+
+```text
+healthy
+```
+
+The health check script verifies that the Jupyter HTTP
+server responds successfully.
+
+### Docker Integration Testing
+
+The integration workflow validates container functionality
+and persistent notebook storage.
+
+Run the integration script from the repository:
 
 ```bash
-heroku container:login
+bash scripts/integration_test.sh
 ```
 
-#### 7. Push & Release To Heroku
+## CI/CD Pipeline
+
+```mermaid
+flowchart LR
+    A[Code Push] --> B[GitHub Actions]
+    B --> C[Python Tests]
+    B --> D[Docker CI]
+    B --> E[Integration Tests]
+    B --> F[GHCR Publishing]
+    F --> G[Public Docker Image]
+```
+
+The repository contains four automated workflows:
+
+| Workflow | Responsibility |
+|---|---|
+| Python Tests | Automated Python validation |
+| Jupyter Docker CI | Docker build validation |
+| Docker Integration Tests | Container and storage testing |
+| Publish Docker Image to GHCR | Image building and publishing |
+
+All four workflows passed for commit c798754,
+including the NumPy compatibility update.
+
+View workflow execution:
+
+https://github.com/VinaykumarDokku/Jupyter-x-Docker/actions
+
+## Docker Image Distribution
+
+Registry: GitHub Container Registry
+
+Public image:
+
+```text
+ghcr.io/vinaykumardokku/jupyter-x-docker:latest
+```
+
+Package page:
+
+https://github.com/VinaykumarDokku/Jupyter-x-Docker/pkgs/container/jupyter-x-docker
+
+Automated publishing simplifies image distribution by allowing
+developers to download the environment without building it locally.
+
+## Engineering Improvements
+
+Recent improvements include:
+
+- Docker health check implementation.
+- Automated Python validation.
+- Docker Compose configuration.
+- JupyterLab integration.
+- Persistent notebook storage.
+- Apple Silicon architecture compatibility.
+- Automated Docker integration testing.
+- Public GHCR image publishing.
+- Docker build caching.
+- PyTorch runtime dependency fixes.
+- NumPy compatibility fixes.
+- Removal of hardcoded Jupyter authentication configuration.
+
+## Troubleshooting
+
+### PyTorch Installation Fails on Apple Silicon
+
+Use the Linux AMD64 platform when running the Docker image:
 
 ```bash
-heroku container:push web -a jupyter-x-docker 
-heroku container:release web -a jupyter-x-docker 
+docker pull --platform linux/amd64 \
+  ghcr.io/vinaykumardokku/jupyter-x-docker:latest
 ```
 
-- `web` is the default for our `Dockerfile`. 
+### NumPy Compatibility Warning
 
-#### 8. That's it
+The project uses NumPy 1.26.4 for compatibility
+with the legacy PyTorch 1.10.1 runtime.
+
+### pkg_resources Deprecation Warning
+
+Older PyTorch releases depend on pkg_resources.
+The warning does not prevent the verified runtime
+from executing successfully.
+
+### Port Already in Use
+
+Use another available host port, such as 8889,
+when starting a new container.
+
+### View Application Logs
 
 ```bash
-heroku open
+docker compose logs --tail=100 jupyter
 ```
 
-This should allow you to open up your project.
+Or, for the standalone container:
 
-## Additional Reference
-
-### `Pipfile`
-
+```bash
+docker logs jupyter-ml
 ```
-[[source]]
-url = "https://pypi.org/simple"
-verify_ssl = true
-name = "pypi"
 
-[packages]
-jupyter = "*"
+## Security Considerations
 
-[dev-packages]
+- Keep Jupyter authentication enabled.
+- Never commit authentication tokens or credentials.
+- Bind local development ports to localhost.
+- Do not expose the development server directly to the internet.
+- Review and update legacy dependencies before production deployment.
+- Back up important notebooks and datasets.
 
-[requires]
-python_version = "3.9"
+## Use Cases
 
-```
+- Machine learning experimentation.
+- Python development and education.
+- Data science research.
+- Deep learning model prototyping.
+- Reproducible development environments.
+- Docker and DevOps demonstrations.
+- CI/CD automation practice.
+
+## Future Enhancements
+
+- Upgrade to supported Python and PyTorch versions.
+- Native ARM64 container support.
+- GPU-enabled Docker images.
+- Container vulnerability scanning.
+- Automated dependency updates.
+- Software Bill of Materials generation.
+- Versioned container releases.
+- Cloud deployment with secure authentication.
+
+## Maintainer
+
+**Vinay Kumar Dokku**
+
+Software Engineering | Full-Stack Development | AI/ML | DevOps
+
+- GitHub: https://github.com/VinaykumarDokku
+- Portfolio: https://vinaykumardokku.github.io/
+
+## Acknowledgments
+
+This project builds upon an earlier Jupyter and Docker
+deployment implementation, with additional container management,
+testing, CI/CD, storage, and dependency compatibility improvements.
+
+Existing upstream contributions and applicable license terms
+should be retained and respected.
+
